@@ -24,7 +24,7 @@ class HistoryViews(MethodView):
     def delete(self):
         try:
             HistoryService.delete_all()
-            AudioService.clear_all()
+            AudioService.delete_all()
         except Exception as e:
             return Response(
                 json.dumps({"error": str(e)}, ensure_ascii=False),

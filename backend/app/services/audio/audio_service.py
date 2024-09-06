@@ -1,6 +1,5 @@
 import os
 import shutil
-import soundfile as sf
 import torchaudio
 from uuid import uuid4
 from app.tables.audio import Audio
@@ -8,6 +7,7 @@ from app.tables.audio import Audio
 
 class AudioService:
     root_dir = "./data/audios"
+    temp_file_name = "temp"
 
     @classmethod
     def save_source_file(cls, root_dir_path, file):
@@ -33,7 +33,7 @@ class AudioService:
     def create_audio_by_torch_data(cls, torch_data, sample_rate, type):
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
-        filename = "temp." + type
+        filename = cls.temp_file_name + "." + type
         if os.path.exists(root_dir_path):
             shutil.rmtree(root_dir_path)
         os.makedirs(root_dir_path)
@@ -60,7 +60,7 @@ class AudioService:
         return file_path
 
     @classmethod
-    def clear_all(cls):
+    def delete_all(cls):
         with Audio._meta.database:
             query = Audio.delete()
             query.execute()

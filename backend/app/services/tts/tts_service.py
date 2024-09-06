@@ -26,8 +26,8 @@ class TTSProcessor:
         waveform, sample_rate = torchaudio.load(audio_buf)
         return waveform, sample_rate
 
-    def text_to_speech(self, text, model="ttsmodel1"):
-        if model == "ttsmodel1":
+    def text_to_speech(self, text, model="TTS_WIZ"):
+        if model == "TTS_WIZ":
             payload = {
                 "format": self.format,
                 "sample_rate": self.sample_rate,

@@ -6,13 +6,14 @@ from app.controller import urls
 app = Flask(__name__)
 app.register_blueprint(urls.api)
 
-
 # from flask_socketio import SocketIO
 # socketio = SocketIO(app, cors_allowed_origins="*")
 # @socketio.on("client")
 # def handle_my_custom_event(data):
 #     print(f"received data {len(data)} length")
 #     socketio.emit("server", data)
+
+
 def ensure_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)

@@ -50,5 +50,5 @@ class TTSViews(MethodView):
             return Response(
                 json.dumps({"error": str(e)}, ensure_ascii=False),
                 status=400,
-                content_type='application/json',
+                content_type="application/json",
             )

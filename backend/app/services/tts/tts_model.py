@@ -2,7 +2,7 @@ class TTSModel:
     models = [
         {
             "name": "TTS_WIZ",
-            "value": "ttsmodel1",
+            "value": "TTS_WIZ",
         },
     ]
 
