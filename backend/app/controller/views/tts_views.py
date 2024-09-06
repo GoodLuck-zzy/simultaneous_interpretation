@@ -27,7 +27,7 @@ class TTSViews(MethodView):
                 "audio_id": "",
             }
             HistoryService.create_history(Role.CLIENT.value, history_data)
-            tts_model_value = TTSModel.get_translate_model_value(tts_model)
+            tts_model_value = TTSModel.get_tts_model_value(tts_model)
             torch_data = None
             audio_id = ""
             lang = TranslationModel.get_language_value(target_language)

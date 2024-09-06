@@ -4,7 +4,7 @@ from app.services.m4t.m4t_model import voice_predictor
 class TranslationModel:
     models = [
         {
-            "name": "trans_model",
+            "name": "M4T-0830V1",
             "value": voice_predictor,
         },
     ]

@@ -1,12 +1,8 @@
 class TTSModel:
     models = [
         {
-            "name": "tts_model",
+            "name": "TTS_WIZ",
             "value": "ttsmodel1",
-        },
-        {
-            "name": "tts_other_model",
-            "value": "ttsmodel2",
         },
     ]
 
@@ -31,7 +27,7 @@ class TTSModel:
         return None
 
     @classmethod
-    def get_translate_model_value(cls, name):
+    def get_tts_model_value(cls, name):
         for item in cls.models:
             if name == item["name"]:
                 return item["value"]

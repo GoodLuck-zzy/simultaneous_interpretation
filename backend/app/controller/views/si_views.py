@@ -20,12 +20,12 @@ logger = logging.getLogger(__name__)
 class TextTranslationViews(MethodView):
     def post(self):
         params = request.json
-        si_model = params.get("si_model", "trans_model")
+        si_model = params.get("si_model", "M4T-0830V1")
         source_language = params.get("source_language", "EN")
         target_language = params.get("target_language", "IN")
         output_type = params.get("output_type", TranslationType.TEXT.value)
         use_tts = int(params.get("use_tts", 0))
-        tts_model = params.get("tts_model", "tts_model")
+        tts_model = params.get("tts_model", "TTS_WIZ")
         input = params.get("input")
         history_data = {}
 
@@ -49,25 +49,29 @@ class TextTranslationViews(MethodView):
                     "text": trans_text,
                     "audio_id": "",
                 }
-            elif output_type == TranslationType.SPEECH.value:
+            else:
                 if use_tts:
                     trans_text = T2TTService.text_to_text_translated(
                         input, lang_source, lang_target, trans_model
                     )
                     tts = TTSProcessor(lang_target)
-                    tts_model_value = TTSModel.get_translate_model_value(tts_model)
+                    tts_model_value = TTSModel.get_tts_model_value(tts_model)
                     torch_data, rate = tts.text_to_speech(trans_text, tts_model_value)
                 else:
-                    trans_text, torch_data, rate = T2STService.text_to_speech_translated(
-                        input, lang_source, lang_target, trans_model
+                    trans_text, torch_data, rate = (
+                        T2STService.text_to_speech_translated(
+                            input, lang_source, lang_target, trans_model
+                        )
                     )
+                if output_type == TranslationType.SPEECH.value:
+                    trans_text = ""
                 audio = AudioService.create_audio_by_torch_data(
                     torch_data, rate, AudioFormat.WAV.value
                 )
                 audio_id = audio.id
                 history_data = {
                     "type": TranslationType.SPEECH.value,
-                    "text": input,
+                    "text": trans_text,
                     "audio_id": audio_id,
                 }
             HistoryService.create_history(Role.STAFF.value, history_data)
@@ -87,13 +91,13 @@ class TextTranslationViews(MethodView):
 class SpeechTranslationViews(MethodView):
     def post(self):
         params = request.form
-        si_model = params.get("si_model", "trans_model")
+        si_model = params.get("si_model", "M4T-0830V1")
         source_language = params.get("source_language", "EN")
         target_language = params.get("target_language", "IN")
         output_type = params.get("output_type", TranslationType.TEXT.value)
         use_tts = int(params.get("use_tts", 0))
         file = request.files["file"]
-        tts_model = params.get("tts_model", "tts_model")
+        tts_model = params.get("tts_model", "TTS_WIZ")
         history_data = {}
 
         try:
@@ -118,27 +122,31 @@ class SpeechTranslationViews(MethodView):
                     "text": trans_text,
                     "audio_id": "",
                 }
-            elif output_type == TranslationType.SPEECH.value:
+            else:
                 if use_tts:
                     trans_text = S2TTService.speech_to_translated_text(
                         file_full_path, lang_source, lang_target, trans_model
                     )
                     tts = TTSProcessor(lang_target)
-                    tts_model_value = TTSModel.get_translate_model_value(tts_model)
+                    tts_model_value = TTSModel.get_tts_model_value(tts_model)
                     torch_data, rate = tts.text_to_speech(trans_text, tts_model_value)
                 else:
-                    trans_text, torch_data, rate = S2STService.speech_to_speech_translated(
-                        file_full_path,
-                        lang_source,
-                        lang_target,
-                        trans_model,
+                    trans_text, torch_data, rate = (
+                        S2STService.speech_to_speech_translated(
+                            file_full_path,
+                            lang_source,
+                            lang_target,
+                            trans_model,
+                        )
                     )
+                if output_type == TranslationType.SPEECH.value:
+                    trans_text = ""
                 audio = AudioService.create_audio_by_torch_data(
                     torch_data, rate, AudioFormat.WAV.value
                 )
                 audio_id = audio.id
                 history_data = {
-                    "type": TranslationType.SPEECH.value,
+                    "type": output_type,
                     "text": trans_text,
                     "audio_id": audio_id,
                 }

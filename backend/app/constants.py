@@ -4,6 +4,7 @@ from enum import Enum
 class TranslationType(Enum):
     SPEECH = "speech"
     TEXT = "text"
+    ST = "text+speech"
 
 
 class AudioFormat(Enum):
