@@ -1,5 +1,5 @@
 import torch
-# from seamless_communication.inference import Translator
+from seamless_communication.inference import Translator
 
 
 class M4TModel:
@@ -54,5 +54,4 @@ class M4TModel:
         self._select_keys(model.t2u_model, saved_model, "module.model.t2u_model.")
 
 
-# voice_predictor = M4TModel()
-voice_predictor = None
+voice_predictor = M4TModel()

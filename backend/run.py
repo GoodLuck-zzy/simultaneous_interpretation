@@ -2,12 +2,12 @@ import os
 from flask import Flask
 from app.controller import urls
 
-# from flask_socketio import SocketIO
-
 
 app = Flask(__name__)
+app.register_blueprint(urls.api)
 
 
+# from flask_socketio import SocketIO
 # socketio = SocketIO(app, cors_allowed_origins="*")
 # @socketio.on("client")
 # def handle_my_custom_event(data):
@@ -16,7 +16,6 @@ app = Flask(__name__)
 def ensure_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
-
 
 
 ensure_dir("logs")

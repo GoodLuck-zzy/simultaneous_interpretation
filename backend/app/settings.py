@@ -5,7 +5,7 @@ import os
 
 class MysqlSetting(BaseModel):
     user: str = os.environ.get("MYSQL_USER", "root")
-    password: str = os.environ.get("MYSQL_PASSWORD") or "123456"
+    password: str = os.environ.get("MYSQL_PASSWORD") or "12345678"
     port: int = int(os.environ.get("MYSQL_PORT", 3306))
     database: str = os.environ.get("MYSQL_DB", "si_demo")
     host: str = os.environ.get("MYSQL_HOST", "localhost")
