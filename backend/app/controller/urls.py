@@ -3,6 +3,7 @@ from flask_cors import CORS
 from app.controller.views import models_views
 from app.controller.views import tts_views
 from app.controller.views import si_views
+from app.controller.views import history_views
 
 
 api = Blueprint("demo", __name__, url_prefix="/demo")
@@ -36,4 +37,16 @@ api.add_url_rule(
     "/speech_translate",
     view_func=si_views.SpeechTranslationViews.as_view(name="s2st or s2tt"),
     methods=["POST"],
+)
+
+api.add_url_rule(
+    "/history_list",
+    view_func=history_views.HistoryViews.as_view(name="list history"),
+    methods=["POST"],
+)
+
+api.add_url_rule(
+    "/history_delete",
+    view_func=history_views.HistoryViews.as_view(name="delete history"),
+    methods=["DELETE"],
 )
