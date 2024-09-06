@@ -24,7 +24,7 @@ class TextTranslationViews(MethodView):
         source_language = params.get("source_language", "EN")
         target_language = params.get("target_language", "IN")
         output_type = params.get("output_type", TranslationType.TEXT.value)
-        use_tts = params.get("use_tts", True)
+        use_tts = int(params.get("use_tts", 0))
         tts_model = params.get("tts_model", "tts_model")
         input = params.get("input")
         history_data = {}
@@ -91,7 +91,7 @@ class SpeechTranslationViews(MethodView):
         source_language = params.get("source_language", "EN")
         target_language = params.get("target_language", "IN")
         output_type = params.get("output_type", TranslationType.TEXT.value)
-        use_tts = params.get("use_tts", True)
+        use_tts = int(params.get("use_tts", 0))
         file = request.files["file"]
         tts_model = params.get("tts_model", "tts_model")
         history_data = {}
