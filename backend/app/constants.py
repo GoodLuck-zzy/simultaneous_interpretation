@@ -10,3 +10,8 @@ class AudioFormat(Enum):
     WAV = "wav"
     MP3 = "mp3"
     PCM = "pcm"
+
+
+class Role(Enum):
+    CLIENT = "client"
+    STAFF = "staff"

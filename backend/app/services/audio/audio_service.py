@@ -6,7 +6,7 @@ from app.tables.audio import Audio
 
 
 class AudioService:
-    root_dir = "./data/audio"
+    root_dir = "./data/audios"
 
     @classmethod
     def save_source_file(cls, root_dir_path, file):
@@ -18,10 +18,11 @@ class AudioService:
         file.save(file_path)
 
     @classmethod
-    def create_audio_by_file(cls, file, type):
+    def create_audio_by_file(cls, file):
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
         filename = file.filename
+        type = filename.split(".")[-1]
         cls.save_source_file(root_dir_path, file)
         return Audio.create_instance(
             id=id, type=type, root_dir_path=root_dir_path, filename=filename
@@ -32,6 +33,9 @@ class AudioService:
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
         filename = "temp." + type
+        if os.path.exists(root_dir_path):
+            shutil.rmtree(root_dir_path)
+        os.makedirs(root_dir_path)
         sf.write(root_dir_path + "/" + filename, np_data, sample_rate)
         return Audio.create_instance(
             id=id, type=type, root_dir_path=root_dir_path, filename=filename

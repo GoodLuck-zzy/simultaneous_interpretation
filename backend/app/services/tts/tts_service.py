@@ -28,24 +28,27 @@ class TTSProcessor:
             data, sample_rate = sf.read(audio_buffer)
         return data, sample_rate
 
-    def text_to_speech(self, text):
-        payload = {
-            "format": self.format,
-            "sample_rate": self.sample_rate,
-            "speech_rate": self.speech_rate,
-            "text": text,
-            "text_type": "DEFAULT",
-            "voice": self.voice,
-            "volume": self.volume,
-        }
-        try:
-            response = requests.post(self.tts_url, data=json.dumps(payload), timeout=5)
-        except requests.exceptions.RequestException as e:
-            print(f"Error: {str(e)}")
-            return None, None
-        if response.status_code == 200:
-            np_data, sample_rate = self.bytes_to_numpy(response.content)
-            return np_data, sample_rate
+    def text_to_speech(self, text, model="ttsmodel1"):
+        if model == "ttsmodel1":
+            payload = {
+                "format": self.format,
+                "sample_rate": self.sample_rate,
+                "speech_rate": self.speech_rate,
+                "text": text,
+                "text_type": "DEFAULT",
+                "voice": self.voice,
+                "volume": self.volume,
+            }
+            try:
+                response = requests.post(self.tts_url, data=json.dumps(payload), timeout=5)
+            except requests.exceptions.RequestException as e:
+                print(f"Error: {str(e)}")
+                return None, None
+            if response.status_code == 200:
+                np_data, sample_rate = self.bytes_to_numpy(response.content)
+                return np_data, sample_rate
+            else:
+                print(f"Some error occured. Request return {response.status_code}")
+                return None, None
         else:
-            print(f"Some error occured. Request return {response.status_code}")
             return None, None
