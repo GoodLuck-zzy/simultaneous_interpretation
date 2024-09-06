@@ -18,7 +18,7 @@ def ensure_dir(directory):
         os.makedirs(directory, exist_ok=True)
 
 
-app.register_blueprint(urls.api)
+
 ensure_dir("logs")
 ensure_dir("data")
 

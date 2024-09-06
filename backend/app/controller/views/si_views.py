@@ -17,7 +17,7 @@ from app.constants import TranslationType, AudioFormat, Role
 logger = logging.getLogger(__name__)
 
 
-class TextGenerate(MethodView):
+class TextTranslationViews(MethodView):
     def post(self):
         params = request.json
         si_model = params.get("si_model", "trans_model")
