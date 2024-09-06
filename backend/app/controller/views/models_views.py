@@ -1,7 +1,7 @@
 import json
 import logging
 
-from flask import request, Response
+from flask import Response
 from flask.views import MethodView
 from app.services.tts.tts_model import TTSModel
 from app.services.translate.model import TranslationModel

@@ -31,6 +31,8 @@ class AudioService:
 
     @classmethod
     def create_audio_by_torch_data(cls, torch_data, sample_rate, type):
+        print(torch_data)
+        print(sample_rate)
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
         filename = "temp." + type
@@ -58,3 +60,11 @@ class AudioService:
         if not os.path.exists(file_path):
             raise FileNotFoundError("The audio file does not exist.")
         return file_path
+
+    @classmethod
+    def clear_all(cls):
+        with Audio._meta.database:
+            query = cls.delete()
+            query.execute()
+        if os.path.exists(cls.root_dir):
+            shutil.rmtree(cls.root_dir)

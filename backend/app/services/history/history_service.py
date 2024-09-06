@@ -27,6 +27,12 @@ class HistoryService:
         return num_of_rows_modified > 0
 
     @staticmethod
+    def delete_all():
+        with History._meta.database:
+            query = History.delete()
+            query.execute()
+
+    @staticmethod
     def list_histories(session_id=None):
         params = {"is_deleted": False}
         if session_id:
@@ -35,4 +41,4 @@ class HistoryService:
             params=params,
             order={"order": "created_at", "sort": "desc"},
         )
-        return list(query)
+        return [item.to_json() for item in query]
