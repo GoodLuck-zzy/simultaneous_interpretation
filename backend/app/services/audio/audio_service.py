@@ -64,7 +64,7 @@ class AudioService:
     @classmethod
     def clear_all(cls):
         with Audio._meta.database:
-            query = cls.delete()
+            query = Audio.delete()
             query.execute()
         if os.path.exists(cls.root_dir):
             shutil.rmtree(cls.root_dir)
