@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class TTSViews(MethodView):
     def post(self):
         params = request.json
-        tts_model = params.get("tts_model", "tts_model")
+        tts_model = params.get("tts_model", "TTS_WIZ")
         target_language = params.get("target_language", "IN")
         input = params.get("input")
         history_data = {}
@@ -28,8 +28,6 @@ class TTSViews(MethodView):
             }
             HistoryService.create_history(Role.CLIENT.value, history_data)
             tts_model_value = TTSModel.get_tts_model_value(tts_model)
-            torch_data = None
-            audio_id = ""
             lang = TranslationModel.get_language_value(target_language)
             tts = TTSProcessor(lang)
             torch_data, rate = tts.text_to_speech(input, tts_model_value)

@@ -31,8 +31,6 @@ class AudioService:
 
     @classmethod
     def create_audio_by_torch_data(cls, torch_data, sample_rate, type):
-        print(torch_data)
-        print(sample_rate)
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
         filename = "temp." + type

@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -70,7 +71,7 @@ class TextTranslationViews(MethodView):
                 )
                 audio_id = audio.id
                 history_data = {
-                    "type": TranslationType.SPEECH.value,
+                    "type": output_type,
                     "text": trans_text,
                     "audio_id": audio_id,
                 }
@@ -104,7 +105,9 @@ class SpeechTranslationViews(MethodView):
             lang_source = TranslationModel.get_language_value(source_language)
             lang_target = TranslationModel.get_language_value(target_language)
             audio_input = AudioService.create_audio_by_file(file)
-            file_full_path = audio_input.root_dir_path + "/" + audio_input.filename
+            file_full_path = os.path.join(
+                audio_input.root_dir_path, audio_input.filename
+            )
             history_data = {
                 "type": TranslationType.SPEECH.value,
                 "text": "",
