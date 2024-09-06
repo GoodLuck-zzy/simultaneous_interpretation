@@ -1,6 +1,7 @@
 import os
 import shutil
 import soundfile as sf
+import torchaudio
 from uuid import uuid4
 from app.tables.audio import Audio
 
@@ -29,14 +30,14 @@ class AudioService:
         )
 
     @classmethod
-    def create_audio_by_npdata(cls, np_data, sample_rate, type):
+    def create_audio_by_torch_data(cls, torch_data, sample_rate, type):
         id = str(uuid4())
         root_dir_path = os.path.join(cls.root_dir, id)
         filename = "temp." + type
         if os.path.exists(root_dir_path):
             shutil.rmtree(root_dir_path)
         os.makedirs(root_dir_path)
-        sf.write(root_dir_path + "/" + filename, np_data, sample_rate)
+        torchaudio.save(os.path.join(root_dir_path, filename), torch_data, sample_rate)
         return Audio.create_instance(
             id=id, type=type, root_dir_path=root_dir_path, filename=filename
         )

@@ -1,6 +1,3 @@
-from app.services.m4t.m4t_model import voice_predictor
-
-
 class S2TTService:
     @classmethod
     def speech_to_translated_text(

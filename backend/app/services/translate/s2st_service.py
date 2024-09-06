@@ -1,3 +1,6 @@
+import torch
+
+
 class S2STService:
     @classmethod
     def speech_to_speech_translated(
@@ -13,5 +16,5 @@ class S2STService:
             src_lang=source_language,
             tgt_lang=target_language,
         )
-        out_wav = out_audios.audio_wavs[0].cpu().detach().numpy()
-        return str(text[0]), out_wav
+        out_torch = out_audios.audio_wavs[0][0].to(torch.float32).cpu()
+        return str(text[0]), out_torch, out_audios.sample_rate

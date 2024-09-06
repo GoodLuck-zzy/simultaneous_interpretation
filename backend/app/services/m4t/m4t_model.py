@@ -13,7 +13,7 @@ class M4TModel:
             model_name,
             vocoder_name,
             torch.device("cuda:0"),
-            dtype=torch.float16,
+            dtype=torch.float32,
         )
         self._load_checkpoint(
             self.translator.model,

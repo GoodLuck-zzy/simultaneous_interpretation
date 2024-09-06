@@ -39,7 +39,6 @@ class TextTranslationViews(MethodView):
             trans_model = TranslationModel.get_translate_model_value(si_model)
             lang_source = TranslationModel.get_language_value(source_language)
             lang_target = TranslationModel.get_language_value(target_language)
-            np_data = None
             audio_id = ""
             if output_type == TranslationType.TEXT.value:
                 trans_text = T2TTService.text_to_text_translated(
@@ -57,13 +56,13 @@ class TextTranslationViews(MethodView):
                     )
                     tts = TTSProcessor(lang_target)
                     tts_model_value = TTSModel.get_translate_model_value(tts_model)
-                    np_data, rate = tts.text_to_speech(trans_text, tts_model_value)
+                    torch_data, rate = tts.text_to_speech(trans_text, tts_model_value)
                 else:
-                    trans_text, np_data, rate = T2STService.text_to_speech_translated(
+                    trans_text, torch_data, rate = T2STService.text_to_speech_translated(
                         input, lang_source, lang_target, trans_model
                     )
-                audio = AudioService.create_audio_by_npdata(
-                    np_data, rate, AudioFormat.WAV.value
+                audio = AudioService.create_audio_by_torch_data(
+                    torch_data, rate, AudioFormat.WAV.value
                 )
                 audio_id = audio.id
                 history_data = {
@@ -109,7 +108,6 @@ class SpeechTranslationViews(MethodView):
             }
             HistoryService.create_history(Role.CLIENT.value, history_data)
             trans_model = TranslationModel.get_translate_model_value(si_model)
-            np_data = None
             audio_id = ""
             if output_type == TranslationType.TEXT.value:
                 trans_text = S2TTService.speech_to_translated_text(
@@ -127,16 +125,16 @@ class SpeechTranslationViews(MethodView):
                     )
                     tts = TTSProcessor(lang_target)
                     tts_model_value = TTSModel.get_translate_model_value(tts_model)
-                    np_data, rate = tts.text_to_speech(trans_text, tts_model_value)
+                    torch_data, rate = tts.text_to_speech(trans_text, tts_model_value)
                 else:
-                    trans_text, np_data, rate = S2STService.speech_to_speech_translated(
+                    trans_text, torch_data, rate = S2STService.speech_to_speech_translated(
                         file_full_path,
                         lang_source,
                         lang_target,
                         trans_model,
                     )
-                audio = AudioService.create_audio_by_npdata(
-                    np_data, rate, AudioFormat.WAV.value
+                audio = AudioService.create_audio_by_torch_data(
+                    torch_data, rate, AudioFormat.WAV.value
                 )
                 audio_id = audio.id
                 history_data = {

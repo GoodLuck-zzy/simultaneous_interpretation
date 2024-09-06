@@ -1,9 +1,7 @@
 import io
 import json
 import requests
-import numpy as np
-import soundfile as sf
-
+import torchaudio
 from app.settings import settings
 
 
@@ -23,10 +21,10 @@ class TTSProcessor:
         self.sample_rate = sample_rate
         self.tts_url = settings.wiz_tts.tts_url
 
-    def bytes_to_numpy(self, audio_bytes):
-        with io.BytesIO(audio_bytes) as audio_buffer:
-            data, sample_rate = sf.read(audio_buffer)
-        return data, sample_rate
+    def bytes_to_torch(self, audio_bytes):
+        audio_buf = io.BytesIO(audio_bytes)
+        waveform, _ = torchaudio.load(audio_buf)
+        return waveform
 
     def text_to_speech(self, text, model="ttsmodel1"):
         if model == "ttsmodel1":
@@ -45,8 +43,8 @@ class TTSProcessor:
                 print(f"Error: {str(e)}")
                 return None, None
             if response.status_code == 200:
-                np_data, sample_rate = self.bytes_to_numpy(response.content)
-                return np_data, sample_rate
+                torch_data, sample_rate = self.bytes_to_torch(response.content)
+                return torch_data, sample_rate
             else:
                 print(f"Some error occured. Request return {response.status_code}")
                 return None, None

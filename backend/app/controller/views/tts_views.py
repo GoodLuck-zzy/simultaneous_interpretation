@@ -28,13 +28,13 @@ class TTSViews(MethodView):
             }
             HistoryService.create_history(Role.CLIENT.value, history_data)
             tts_model_value = TTSModel.get_translate_model_value(tts_model)
-            np_data = None
+            torch_data = None
             audio_id = ""
             lang = TranslationModel.get_language_value(target_language)
             tts = TTSProcessor(lang)
-            np_data, rate = tts.text_to_speech(input, tts_model_value)
-            audio = AudioService.create_audio_by_npdata(
-                np_data, rate, AudioFormat.WAV.value
+            torch_data, rate = tts.text_to_speech(input, tts_model_value)
+            audio = AudioService.create_audio_by_torch_data(
+                torch_data, rate, AudioFormat.WAV.value
             )
             audio_id = audio.id
             history_data = {
