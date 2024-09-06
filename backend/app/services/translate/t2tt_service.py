@@ -10,7 +10,7 @@ class T2TTService:
         target_language,
         tans_model,
     ):
-        text, _ = tans_model.predict(
+        text, _ = tans_model.translator.predict(
             input=text,
             task_str="T2TT",
             src_lang=source_language,

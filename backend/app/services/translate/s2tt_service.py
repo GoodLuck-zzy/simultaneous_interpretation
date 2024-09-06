@@ -10,7 +10,7 @@ class S2TTService:
         target_language,
         tans_model,
     ):
-        text, _ = tans_model.predict(
+        text, _ = tans_model.translator.predict(
             input=audio_file,
             task_str="S2TT",
             src_lang=source_language,

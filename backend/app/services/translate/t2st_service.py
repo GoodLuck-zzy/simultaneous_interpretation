@@ -10,7 +10,7 @@ class T2STService:
         target_language,
         tans_model
     ):
-        text, out_audios = tans_model.predict(
+        text, out_audios = tans_model.translator.predict(
             input=text,
             task_str="T2ST",
             src_lang=source_language,
