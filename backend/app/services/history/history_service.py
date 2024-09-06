@@ -39,6 +39,6 @@ class HistoryService:
             params["session_id"] = session_id
         query = History.list(
             params=params,
-            order={"order": "created_at", "sort": "desc"},
+            order=[{"order": "created_at", "sort": "asc"}],
         )
         return [item.to_json() for item in query]
