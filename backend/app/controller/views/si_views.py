@@ -139,7 +139,7 @@ class SpeechTranslationViews(MethodView):
                 audio_id = audio.id
                 history_data = {
                     "type": TranslationType.SPEECH.value,
-                    "text": "",
+                    "text": trans_text,
                     "audio_id": audio_id,
                 }
             HistoryService.create_history(Role.STAFF.value, history_data)
