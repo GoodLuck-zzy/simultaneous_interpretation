@@ -10,7 +10,7 @@ api = Blueprint("demo", __name__, url_prefix="/demo")
 CORS(api)
 
 api.add_url_rule(
-    "/s2tt_model",
+    "/tranlate_model",
     view_func=models_views.S2TTModelConfig.as_view(name="s2tt model config"),
     methods=["GET"],
 )
