@@ -50,3 +50,9 @@ api.add_url_rule(
     view_func=history_views.HistoryViews.as_view(name="delete history"),
     methods=["DELETE"],
 )
+
+api.add_url_rule(
+    "/audio/<id>",
+    view_func=history_views.AudioViews.as_view(name="get audio by id"),
+    methods=["GET"],
+)
