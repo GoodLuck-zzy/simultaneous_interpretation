@@ -11,7 +11,14 @@ logger = logging.getLogger(__name__)
 
 class HistoryViews(MethodView):
     def get(self):
-        list = HistoryService.list_histories()
+        try:
+            list = HistoryService.list_histories()
+        except Exception as e:
+            return Response(
+                json.dumps({"error": str(e)}, ensure_ascii=False),
+                status=400,
+                content_type="application/json",
+            )
         return Response(json.dumps(list), status=200, content_type="application/json")
 
     def delete(self):

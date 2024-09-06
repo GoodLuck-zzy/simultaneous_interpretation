@@ -41,4 +41,11 @@ class HistoryService:
             params=params,
             order=[{"order": "created_at", "sort": "asc"}],
         )
-        return [item.to_json() for item in query]
+        res = []
+        for item in query:
+            d = {}
+            json = item.to_json()
+            d["role"] = json.get("role")
+            d["data"] = json.get("data")
+            res.append(d)
+        return res
