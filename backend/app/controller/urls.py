@@ -42,7 +42,7 @@ api.add_url_rule(
 api.add_url_rule(
     "/history_list",
     view_func=history_views.HistoryViews.as_view(name="list history"),
-    methods=["POST"],
+    methods=["GET"],
 )
 
 api.add_url_rule(

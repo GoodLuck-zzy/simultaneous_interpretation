@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class HistoryViews(MethodView):
-    def post(self):
+    def get(self):
         list = HistoryService.list_histories()
         return Response(json.dumps(list), status=200, content_type="application/json")
 
