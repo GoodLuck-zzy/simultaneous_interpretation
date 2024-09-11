@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-    <SendRecordVue/>
+    <AudioStream/>
   </div>
 </template>
 
 <script>
-import SendRecordVue from './views/SendRecord.vue'
+import AudioStream from './views/AudioStream.vue'
 export default {
   name: 'App',
   components: {
-    SendRecordVue
+    AudioStream
   }
 }
 </script>

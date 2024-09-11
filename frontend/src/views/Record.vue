@@ -14,9 +14,9 @@ export default {
 
     async function fetchMessage() {
       try {
-        const response = await fetch('http://localhost:15000/demo/hello');
+        const response = await fetch('http://192.168.33.71:15000/demo/tranlate_model');
         const data = await response.json();
-        message.value = data.message;
+        message.value = data.models[0];
       } catch (error) {
         console.error("There was an error fetching the message:", error);
       }
