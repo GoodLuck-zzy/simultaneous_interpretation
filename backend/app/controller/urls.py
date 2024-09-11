@@ -11,7 +11,7 @@ CORS(api)
 
 api.add_url_rule(
     "/tranlate_model",
-    view_func=models_views.S2TTModelConfig.as_view(name="s2tt model config"),
+    view_func=models_views.TranslationModelConfig.as_view(name="si model config"),
     methods=["GET"],
 )
 
@@ -23,7 +23,7 @@ api.add_url_rule(
 
 api.add_url_rule(
     "/tts_generate",
-    view_func=tts_views.TTSViews.as_view(name="tts only generate"),
+    view_func=tts_views.TTSViews.as_view(name="tts generate"),
     methods=["POST"],
 )
 

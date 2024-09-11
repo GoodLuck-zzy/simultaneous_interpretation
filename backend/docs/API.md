@@ -58,7 +58,15 @@ url: /demo/history
             "type": "speech+text",
             "audio_id": "786ecc70-8ecc-4aa2-ac77-10e8fcd8c607"
         }
-    }
+    },
+    {
+        "role": "client",
+        "data": {
+            "text": "Hello sir, what would you like to eat today?",
+            "type": "text",
+            "audio_id": ""
+        }
+    },
 ]
 ```
 

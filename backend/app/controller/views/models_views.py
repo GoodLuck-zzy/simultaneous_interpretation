@@ -9,7 +9,7 @@ from app.services.translate.model import TranslationModel
 logger = logging.getLogger(__name__)
 
 
-class S2TTModelConfig(MethodView):
+class TranslationModelConfig(MethodView):
     def get(self):
         try:
             models = TranslationModel.get_translation_models()
