@@ -1,5 +1,5 @@
 import torch
-# from seamless_communication.inference import Translator
+from seamless_communication.inference import Translator
 
 
 class M4TModel:
@@ -9,12 +9,12 @@ class M4TModel:
         vocoder_name="vocoder_36langs",
         checkpoint_path="/root/zzy/app/models/MenuSifu_ID_S2S_v1_9.pt",
     ) -> None:
-        # self.translator = Translator(
-        #     model_name,
-        #     vocoder_name,
-        #     torch.device("cuda:0"),
-        #     dtype=torch.float32,
-        # )
+        self.translator = Translator(
+            model_name,
+            vocoder_name,
+            torch.device("cuda:0"),
+            dtype=torch.float32,
+        )
         self._load_checkpoint(
             self.translator.model,
             checkpoint_path,
@@ -54,4 +54,4 @@ class M4TModel:
         self._select_keys(model.t2u_model, saved_model, "module.model.t2u_model.")
 
 
-voice_predictor = None # M4TModel()
+voice_predictor = M4TModel()
