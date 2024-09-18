@@ -26,7 +26,7 @@ class TTSProcessor:
         waveform, sample_rate = torchaudio.load(audio_buf)
         return waveform, sample_rate
 
-    def text_to_speech(self, text, model="TTS_WIZ"):
+    def text_to_speech(self, text, model="TTS_WIZ", output="torch"):
         if model == "TTS_WIZ":
             payload = {
                 "format": self.format,
@@ -43,8 +43,11 @@ class TTSProcessor:
                 print(f"Error: {str(e)}")
                 return None, None
             if response.status_code == 200:
-                torch_data, sample_rate = self.bytes_to_torch(response.content)
-                return torch_data, sample_rate
+                if output == "torch":
+                    torch_data, sample_rate = self.bytes_to_torch(response.content)
+                    return torch_data, sample_rate
+                elif output == "byte":
+                    return response.content, self.sample_rate
             else:
                 print(f"Some error occured. Request return {response.status_code}")
                 return None, None
