@@ -22,9 +22,6 @@ export default {
       mediaSource: null,
       sourceBuffer: null,
       role: null,
-      audioChunks: [], // 用于暂存音频数据块
-      audioBuffer: new Uint8Array(320), // 预分配320字节的缓冲区
-      bufferIndex: 0 // 缓冲区当前索引
     }
   },
   mounted() {
@@ -42,7 +39,7 @@ export default {
       }
       try {
         if (!this.socket || !this.socket.connected) {
-          this.socket = io('http://localhost:15000', { query: `role=${this.role}` })
+          this.socket = io('http://192.168.33.71:15000', { query: `role=${this.role}` })
           this.socket.on('connection_response', (data) => {
             if (data.status === 'rejected') {
               console.log('Connection rejected by the server.')
@@ -65,10 +62,6 @@ export default {
       }
     },
     disconnectFromServer() {
-      if (this.bufferIndex > 0) {
-        const remainingData = this.audioBuffer.slice(0, this.bufferIndex);
-        this.socket.emit('audio_stream', remainingData);
-      }
       try {
         if (this.socket && this.socket.connected) {
           this.socket.disconnect()
@@ -103,20 +96,10 @@ export default {
       this.initMediaSource()
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.mediaRecorder = new MediaRecorder(stream)
-      this.mediaRecorder.ondataavailable = async (e) => {
-        const data = new Uint8Array(await e.data.arrayBuffer()) // 将Blob转换为Uint8Array
-        for (let i = 0; i < data.length; i++) {
-          this.audioBuffer[this.bufferIndex++] = data[i]
-          if (this.bufferIndex === 320) {
-            // 当达到320字节时发送数据
-            console.log("send 320 datas:")
-            console.log(this.audioBuffer)
-            this.socket.emit('audio_stream', this.audioBuffer)
-            this.bufferIndex = 0 // 重置索引
-          }
-        }
+      this.mediaRecorder.ondataavailable = (e) => {
+        this.socket.emit('audio_stream', e.data)
       }
-      this.mediaRecorder.start(200) // 可以调整时间片以优化数据收集
+      this.mediaRecorder.start(200)
     },
 
     stopRecording() {

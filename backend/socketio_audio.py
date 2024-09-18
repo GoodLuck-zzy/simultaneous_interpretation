@@ -37,7 +37,7 @@ CHUNK = samples_per_frame * bytes_per_sample
 
 def process_accumulated_voice_frames(info):
     audio_data_bytes = b"".join(info["voice_frames"])
-    if is_speech_by_wiz(audio_data_bytes, audio_format="pcm"):
+    if is_speech_by_wiz(audio_data_bytes, SAMPLE_RATE, audio_format="pcm"):
         with io.BytesIO() as mem_file:
             with wave.open(mem_file, "wb") as wf:
                 wf.setnchannels(CHANNELS)
