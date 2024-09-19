@@ -16,3 +16,8 @@ class AudioFormat(Enum):
 class Role(Enum):
     CLIENT = "client"
     STAFF = "staff"
+
+
+class OutputFormat(Enum):
+    TORCH = "torch"
+    BYTE = "byte"

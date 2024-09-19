@@ -1,17 +1,19 @@
+alembic==1.12.1
+eventlet==0.36.1
+fairseq2==0.2.1
 Flask==3.0.2
 Flask-Cors==5.0.0
 Flask-SocketIO==5.3.7
-eventlet==0.36.1
+numpy==1.24.4
+PyAudio==0.2.14
 pydantic==2.6.4
 pydantic_settings==2.2.1
 peewee==3.17.1
 PyMySQL==1.1.0
-alembic==1.12.1
 pytz==2024.1
-torch==2.2.2
-webrtcvad==2.0.10
-numpy==1.24.4
 soundfile==0.11.0
 seamless-communication==1.0.0
 torchaudio==2.2.2
+torch==2.2.2
+webrtcvad==2.0.10
 

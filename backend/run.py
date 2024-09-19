@@ -16,6 +16,7 @@ from app.services.translate.model import TranslationModel
 from app.services.tts.tts_service import TTSProcessor
 from app.services.tts.tts_model import TTSModel
 from app.services.vad.vad_service import VadService
+from app.constants import OutputFormat, Role
 from app.controller import urls
 
 
@@ -31,9 +32,16 @@ frame_duration = 20  # 可以是10, 20, 或30毫秒
 bytes_per_sample = 2
 SAMPLE_RATE = 8000
 samples_per_frame = int(SAMPLE_RATE * frame_duration / 1000)
-CHUNK = samples_per_frame * bytes_per_sample
+CHUNK = samples_per_frame * bytes_per_sample  # 每次处理的块大小
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
+SPEAK_MAX_TIME = 5
+SILENT_MAX_FRAME = 20
+
+
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
 
 
 def process_accumulated_voice_frames(info):
@@ -61,7 +69,9 @@ def process_accumulated_voice_frames(info):
         print(f"output text: {text} ")
         tts = TTSProcessor(info["target_language"])
         tts_model_value = TTSModel.get_tts_model_value("TTS_WIZ")
-        byte_data, _ = tts.text_to_speech(text, tts_model_value, output="byte")
+        byte_data, _ = tts.text_to_speech(
+            text, tts_model_value, output=OutputFormat.BYTE.value
+        )
         emit("audio_stream_output", byte_data, broadcast=True, include_self=False)
         info["is_currently_speaking"] = False
         info["silent_frames"] = 0
@@ -89,10 +99,10 @@ def on_connect():
         client_queue[request.sid]["is_currently_speaking"] = False
         client_queue[request.sid]["silent_frames"] = 0
         client_queue[request.sid]["last_speech_time"] = None
-        if role == "client":
+        if role == Role.CLIENT.value:
             client_queue[request.sid]["source_language"] = "eng"
             client_queue[request.sid]["target_language"] = "ind"
-        elif role == "staff":
+        elif role == Role.STAFF.value:
             client_queue[request.sid]["source_language"] = "ind"
             client_queue[request.sid]["target_language"] = "eng"
         emit(
@@ -118,8 +128,6 @@ def on_disconnect():
 
 @socketio.on("audio_stream")
 def handle_audio_stream(data):
-    print(f"send data length: {len(data)}")
-    print("-----------------------------------------")
     info = client_queue[request.sid]
     info["audio_buffer"] += data
     while len(info["audio_buffer"]) >= CHUNK:
@@ -136,21 +144,16 @@ def handle_audio_stream(data):
                 info["last_speech_time"] = now
             info["voice_frames"].append(data_block)
             print("save voice frames")
-            if now - info["last_speech_time"] > 5:
-                print("More than 5s voice, process.")
+            if now - info["last_speech_time"] > SPEAK_MAX_TIME:
+                print(f"More than {SPEAK_MAX_TIME}s voice, process.")
                 process_accumulated_voice_frames(info)
         else:
             if info["is_currently_speaking"] and info["voice_frames"]:
                 info["silent_frames"] += 1
                 print("save silent frames")
-                if info["silent_frames"] >= 20:
-                    print("More than 20 silent frames, process.")
+                if info["silent_frames"] >= SILENT_MAX_FRAME:
+                    print(f"More than {SILENT_MAX_FRAME} silent frames, process.")
                     process_accumulated_voice_frames(info)
-
-
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
 
 
 ensure_dir("logs")

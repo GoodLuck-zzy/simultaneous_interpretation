@@ -3,6 +3,7 @@ import json
 import requests
 import torchaudio
 from app.settings import settings
+from app.constants import OutputFormat
 
 
 class TTSProcessor:
@@ -26,7 +27,7 @@ class TTSProcessor:
         waveform, sample_rate = torchaudio.load(audio_buf)
         return waveform, sample_rate
 
-    def text_to_speech(self, text, model="TTS_WIZ", output="torch"):
+    def text_to_speech(self, text, model="TTS_WIZ", output=OutputFormat.TORCH.value):
         if model == "TTS_WIZ":
             payload = {
                 "format": self.format,
@@ -43,10 +44,10 @@ class TTSProcessor:
                 print(f"Error: {str(e)}")
                 return None, None
             if response.status_code == 200:
-                if output == "torch":
+                if output == OutputFormat.TORCH.value:
                     torch_data, sample_rate = self.bytes_to_torch(response.content)
                     return torch_data, sample_rate
-                elif output == "byte":
+                elif output == OutputFormat.BYTE.value:
                     return response.content, self.sample_rate
             else:
                 print(f"Some error occured. Request return {response.status_code}")
