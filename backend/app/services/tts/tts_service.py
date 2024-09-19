@@ -1,9 +1,8 @@
-import io
 import json
 import requests
-import torchaudio
 from app.settings import settings
 from app.constants import OutputFormat
+from app.utils.audio.utils import bytes_to_torch
 
 
 class TTSProcessor:
@@ -22,11 +21,6 @@ class TTSProcessor:
         self.sample_rate = sample_rate
         self.tts_url = settings.wiz_tts.tts_url
 
-    def bytes_to_torch(self, audio_bytes):
-        audio_buf = io.BytesIO(audio_bytes)
-        waveform, sample_rate = torchaudio.load(audio_buf)
-        return waveform, sample_rate
-
     def text_to_speech(self, text, model="TTS_WIZ", output=OutputFormat.TORCH.value):
         if model == "TTS_WIZ":
             payload = {
@@ -39,13 +33,15 @@ class TTSProcessor:
                 "volume": self.volume,
             }
             try:
-                response = requests.post(self.tts_url, data=json.dumps(payload), timeout=5)
+                response = requests.post(
+                    self.tts_url, data=json.dumps(payload), timeout=5
+                )
             except requests.exceptions.RequestException as e:
                 print(f"Error: {str(e)}")
                 return None, None
             if response.status_code == 200:
                 if output == OutputFormat.TORCH.value:
-                    torch_data, sample_rate = self.bytes_to_torch(response.content)
+                    torch_data, sample_rate = bytes_to_torch(response.content)
                     return torch_data, sample_rate
                 elif output == OutputFormat.BYTE.value:
                     return response.content, self.sample_rate
