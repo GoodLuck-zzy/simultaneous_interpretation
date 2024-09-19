@@ -13,6 +13,8 @@ class VadService:
 
     @classmethod
     def is_speech_with_wiz_vad(cls, audio_format, sample_rate, data):
+        if len(data) % 2 != 0:
+            data += b"\x00"
         headers = {
             "accept": "application/json",
             "Content-Type": "application/octet-stream",
@@ -23,7 +25,7 @@ class VadService:
             params=params,
             headers=headers,
             data=data,
-            timeout=1,
+            timeout=2,
         )
         if response.status_code == 200:
             return json.loads(response.text).get("is_speech", False)

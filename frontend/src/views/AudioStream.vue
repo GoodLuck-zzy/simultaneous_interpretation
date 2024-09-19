@@ -5,7 +5,6 @@
     <button @click="connectToServer">Connect to Server</button>
     <button @click="disconnectFromServer">Disconnect from Server</button>
     <button @click="startRecording">Start Recording</button>
-    <button @click="stopRecording">Stop Recording</button>
     <audio ref="audioPlayer" controls></audio>
   </div>
 </template>
@@ -21,7 +20,7 @@ export default {
       socket: null,
       mediaSource: null,
       sourceBuffer: null,
-      role: null,
+      role: null
     }
   },
   mounted() {
@@ -46,16 +45,17 @@ export default {
               this.socket.disconnect(true)
             } else if (data.status === 'accepted') {
               console.log(`Connected to server as ${data.role}.`)
+              console.log(`this.socket: ${this.socket}, this.socket.connected: ${this.socket.connected}`)
             } else if (data.status === 'already_connected') {
               console.log('Already connected to server.')
             }
           })
           this.socket.on('audio_stream_output', (data) => {
+            console.log(data)
             if (this.sourceBuffer && !this.sourceBuffer.updating) {
               this.sourceBuffer.appendBuffer(data)
             }
           })
-          console.log('Connection attempt made.')
         }
       } catch (error) {
         console.error('Failed to connect to server:', error)
@@ -64,7 +64,14 @@ export default {
     disconnectFromServer() {
       try {
         if (this.socket && this.socket.connected) {
-          this.socket.disconnect()
+          this.socket.disconnect(true)
+          this.socket.on('disconnection_response', (data) => {
+            if (data.status === 'accepted') {
+              console.log('execute disconnected.')
+            } else if (data.status === 'already_disconnected') {
+              console.log('Already disconnected.')
+            }
+          })
           console.log('Disconnected from server.')
           this.initMediaSource() // Reinitialize the media source
         } else {
@@ -100,17 +107,6 @@ export default {
         this.socket.emit('audio_stream', e.data)
       }
       this.mediaRecorder.start(200)
-    },
-
-    stopRecording() {
-      if (this.mediaRecorder) {
-        this.mediaRecorder.stop()
-        this.mediaRecorder.stream.getTracks().forEach((track) => track.stop())
-        this.mediaRecorder = null
-      }
-      if (this.mediaSource.readyState === 'open') {
-        this.mediaSource.endOfStream()
-      }
     }
   }
 }
