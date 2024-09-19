@@ -13,7 +13,7 @@ from app.services.vad.vad_service import VadService
 from app.services.audio.audio_service import AudioService
 from app.services.history.history_service import HistoryService
 from app.constants import OutputFormat, AudioFormat, TranslationType
-from app.utils.audio.utils import bytes_to_torch
+from app.utils.audio_utils import bytes_to_torch
 
 
 class StreamProcessor:
