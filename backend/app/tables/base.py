@@ -63,7 +63,7 @@ class ModelBase(Model):
                 column_value = getattr(self, column)
                 item[column] = self._normalize_model_field(column_value, column_type)
             except Exception as e:
-                print(e)
+                logger.error(e)
                 pass
         return item
 

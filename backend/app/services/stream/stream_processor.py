@@ -1,7 +1,7 @@
 import io
 import wave
 import pyaudio
-
+import logging
 from flask_socketio import emit
 from fairseq2.memory import MemoryBlock
 from app.services.m4t.m4t_model import voice_predictor
@@ -15,6 +15,8 @@ from app.services.history.history_service import HistoryService
 from app.constants import OutputFormat, AudioFormat, TranslationType
 from app.utils.audio_utils import bytes_to_torch
 
+logger = logging.getLogger(__name__)
+
 
 class StreamProcessor:
     @classmethod
@@ -23,7 +25,6 @@ class StreamProcessor:
         if VadService.is_speech_with_wiz_vad(
             audio_format="pcm", sample_rate=sample_rate, data=audio_data_bytes
         ):
-            print("is speech wiz is True")
             torch_data, rate = bytes_to_torch(audio_data_bytes)
             audio_input = AudioService.create_audio_by_torch_data(
                 torch_data, rate, AudioFormat.WAV.value
@@ -51,7 +52,7 @@ class StreamProcessor:
                 info["target_language"],
                 trans_model,
             )
-            print(f"output text: {text} ")
+            logger.info(f"output text: {text} ")
             tts = TTSProcessor(info["target_language"])
             tts_model_value = TTSModel.get_tts_model_value("TTS_WIZ")
             byte_data, _ = tts.text_to_speech(
@@ -72,5 +73,5 @@ class StreamProcessor:
             info["is_currently_speaking"] = False
             info["silent_frames"] = 0
         else:
-            print("silent...")
+            logger.debug("silent...")
         info["voice_frames"].clear()

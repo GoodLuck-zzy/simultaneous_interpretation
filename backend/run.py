@@ -1,7 +1,7 @@
 import time
 import pyaudio
 import webrtcvad
-
+import logging
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -11,6 +11,7 @@ from app.controller import urls
 from app.services.stream.stream_processor import StreamProcessor
 from app.utils.util import ensure_dir
 
+logger = logging.getLogger(__name__)
 
 ensure_dir("logs")
 ensure_dir("data")
@@ -35,16 +36,15 @@ SILENT_MAX_FRAME = 20
 
 @socketio.on("connect")
 def on_connect():
-    print("on_connect start")
     role = request.args.get("role")
     if len(client_queue) >= MAX_USERS:
-        print("Maximum number of connections reached")
+        logger.warning("Maximum number of connections reached")
         emit("connection_response", {"status": "rejected"}, to=request.sid)
     elif request.sid in client_queue.keys():
-        print(f"Client {request.sid} already connected")
+        logger.warning(f"Client {request.sid} already connected")
         emit("connection_response", {"status": "already_connected"}, to=request.sid)
     else:
-        print(f"Client {request.sid} connected with role {role}")
+        logger.info(f"Client {request.sid} connected with role {role}")
         client_queue[request.sid] = {}
         client_queue[request.sid]["role"] = role
         client_queue[request.sid]["voice_frames"] = deque()
@@ -61,13 +61,12 @@ def on_connect():
         emit(
             "connection_response", {"status": "accepted", "role": role}, to=request.sid
         )
-        print(client_queue)
 
 
 @socketio.on("disconnect")
 def on_disconnect():
     if request.sid in client_queue.keys():
-        print(f"Client {request.sid} disconnected")
+        logger.info(f"Client {request.sid} disconnected")
         del client_queue[request.sid]
         emit("disconnection_response", {"status": "accepted"}, to=request.sid)
     else:
@@ -84,27 +83,24 @@ def handle_audio_stream(data):
         data_block = info["audio_buffer"][:CHUNK]
         info["audio_buffer"] = info["audio_buffer"][CHUNK:]
         is_speech = vad.is_speech(data_block, SAMPLE_RATE)
-        print(f"vad recognize is speech: {is_speech}")
         if is_speech:
             now = time.time()
             if not info["is_currently_speaking"]:
-                print("start speaking...")
+                logger.info("start speaking...")
                 info["is_currently_speaking"] = True
                 info["silent_frames"] = 0
                 info["last_speech_time"] = now
             info["voice_frames"].append(data_block)
-            print("save voice frames")
             if now - info["last_speech_time"] > SPEAK_MAX_TIME:
-                print(f"More than {SPEAK_MAX_TIME}s voice, process.")
+                logger.info(f"More than {SPEAK_MAX_TIME}s voice, process.")
                 StreamProcessor.process_accumulated_voice_frames(
                     CHANNELS, SAMPLE_RATE, FORMAT, info
                 )
         else:
             if info["is_currently_speaking"] and info["voice_frames"]:
                 info["silent_frames"] += 1
-                print("save silent frames")
                 if info["silent_frames"] >= SILENT_MAX_FRAME:
-                    print(f"More than {SILENT_MAX_FRAME} silent frames, process.")
+                    logger.info(f"More than {SILENT_MAX_FRAME} silent frames, process.")
                     StreamProcessor.process_accumulated_voice_frames(
                         CHANNELS, SAMPLE_RATE, FORMAT, info
                     )

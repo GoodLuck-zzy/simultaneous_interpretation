@@ -1,7 +1,10 @@
 import json
 import webrtcvad
 import requests
+import logging
 from app.settings import settings
+
+logger = logging.getLogger(__name__)
 
 
 class VadService:
@@ -29,5 +32,5 @@ class VadService:
         )
         if response.status_code == 200:
             return json.loads(response.text).get("is_speech", False)
-        print("request failed.")
+        logger.error("request wiz vad failed.")
         return False

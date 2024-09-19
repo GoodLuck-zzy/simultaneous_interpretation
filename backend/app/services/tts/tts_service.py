@@ -1,8 +1,11 @@
 import json
+import logging
 import requests
 from app.settings import settings
 from app.constants import OutputFormat
 from app.utils.audio_utils import bytes_to_torch
+
+logger = logging.getLogger(__name__)
 
 
 class TTSProcessor:
@@ -37,7 +40,7 @@ class TTSProcessor:
                     self.tts_url, data=json.dumps(payload), timeout=5
                 )
             except requests.exceptions.RequestException as e:
-                print(f"Error: {str(e)}")
+                logger.error(f"Error: {str(e)}")
                 return None, None
             if response.status_code == 200:
                 if output == OutputFormat.TORCH.value:
@@ -46,7 +49,9 @@ class TTSProcessor:
                 elif output == OutputFormat.BYTE.value:
                     return response.content, self.sample_rate
             else:
-                print(f"Some error occured. Request return {response.status_code}")
+                logger.error(
+                    f"Some error occured. Request return {response.status_code}"
+                )
                 return None, None
         else:
             return None, None
