@@ -2,7 +2,7 @@ import json
 import requests
 from app.settings import settings
 from app.constants import OutputFormat
-from app.utils.audio.utils import bytes_to_torch
+from app.utils.audio_utils import bytes_to_torch
 
 
 class TTSProcessor:
