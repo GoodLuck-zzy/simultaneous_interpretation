@@ -37,6 +37,7 @@ SILENT_MAX_FRAME = 20
 @socketio.on("connect")
 def on_connect():
     role = request.args.get("role")
+    origin_silent = request.args.get("origin_silent")
     if len(client_queue) >= MAX_USERS:
         logger.warning("Maximum number of connections reached")
         emit("connection_response", {"status": "rejected"}, to=request.sid)
@@ -52,6 +53,7 @@ def on_connect():
         client_queue[request.sid]["is_currently_speaking"] = False
         client_queue[request.sid]["silent_frames"] = 0
         client_queue[request.sid]["last_speech_time"] = None
+        client_queue[request.sid]["origin_silent"] = origin_silent
         if role == Role.CLIENT.value:
             client_queue[request.sid]["source_language"] = "eng"
             client_queue[request.sid]["target_language"] = "ind"

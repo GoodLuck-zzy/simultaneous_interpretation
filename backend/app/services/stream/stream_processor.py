@@ -25,6 +25,8 @@ class StreamProcessor:
         if VadService.is_speech_with_wiz_vad(
             audio_format="pcm", sample_rate=sample_rate, data=audio_data_bytes
         ):
+            if not info["origin_silent"]:
+                emit("origin_audio_stream_output", audio_data_bytes, broadcast=True, include_self=False)
             torch_data, rate = bytes_to_torch(audio_data_bytes)
             audio_input = AudioService.create_audio_by_torch_data(
                 torch_data, rate, AudioFormat.WAV.value
