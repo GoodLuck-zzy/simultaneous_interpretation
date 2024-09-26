@@ -46,7 +46,7 @@ class StreamProcessor:
                     wf.setframerate(sample_rate)
                     wf.writeframes(audio_data_bytes)
                 complete_wav_data = mem_file.getvalue()
-            logger.info(f"complete_wav_data len is {complete_wav_data}")
+            logger.info(f"complete_wav_data len is {len(complete_wav_data)}")
             mem_block = MemoryBlock(complete_wav_data)
             decoded_audio = voice_predictor.translator.decode_audio(mem_block)
             trans_model = TranslationModel.get_translate_model_value("M4T-0830V1")
