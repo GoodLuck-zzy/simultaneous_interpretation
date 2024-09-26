@@ -27,17 +27,17 @@ class StreamProcessor:
         ):
             if not info["origin_silent"]:
                 emit("origin_audio_stream_output", audio_data_bytes, broadcast=True, include_self=False)
-            torch_data, rate = bytes_to_torch(audio_data_bytes)
-            audio_input = AudioService.create_audio_by_torch_data(
-                torch_data, rate, AudioFormat.WAV.value
-            )
-            audio_id = audio_input.id
-            history_data = {
-                "type": TranslationType.SPEECH.value,
-                "text": "",
-                "audio_id": audio_id,
-            }
-            HistoryService.create_history(info["role"], history_data)
+            # torch_data, rate = bytes_to_torch(audio_data_bytes)
+            # audio_input = AudioService.create_audio_by_torch_data(
+            #     torch_data, rate, AudioFormat.WAV.value
+            # )
+            # audio_id = audio_input.id
+            # history_data = {
+            #     "type": TranslationType.SPEECH.value,
+            #     "text": "",
+            #     "audio_id": audio_id,
+            # }
+            # HistoryService.create_history(info["role"], history_data)
             with io.BytesIO() as mem_file:
                 with wave.open(mem_file, "wb") as wf:
                     wf.setnchannels(channels)
