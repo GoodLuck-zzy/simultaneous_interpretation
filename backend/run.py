@@ -31,7 +31,7 @@ CHUNK = samples_per_frame * bytes_per_sample  # 每次处理的块大小
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 SPEAK_MAX_TIME = 5
-SILENT_MAX_FRAME = 20
+SILENT_MAX_FRAME = 500
 
 
 @socketio.on("connect")
@@ -79,6 +79,7 @@ def on_disconnect():
 
 @socketio.on("audio_stream")
 def handle_audio_stream(data):
+    logger.info(f"send data, length is {len(data)}")
     info = client_queue[request.sid]
     info["audio_buffer"] += data
     while len(info["audio_buffer"]) >= CHUNK:
@@ -102,6 +103,7 @@ def handle_audio_stream(data):
             if info["is_currently_speaking"] and info["voice_frames"]:
                 info["silent_frames"] += 1
                 if info["silent_frames"] >= SILENT_MAX_FRAME:
+                    info["silent_frames"] = 0
                     logger.info(f"More than {SILENT_MAX_FRAME} silent frames, process.")
                     StreamProcessor.process_accumulated_voice_frames(
                         CHANNELS, SAMPLE_RATE, FORMAT, info

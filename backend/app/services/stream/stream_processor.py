@@ -46,6 +46,7 @@ class StreamProcessor:
                     wf.setframerate(sample_rate)
                     wf.writeframes(audio_data_bytes)
                 complete_wav_data = mem_file.getvalue()
+            logger.info(f"complete_wav_data len is {complete_wav_data}")
             mem_block = MemoryBlock(complete_wav_data)
             decoded_audio = voice_predictor.translator.decode_audio(mem_block)
             trans_model = TranslationModel.get_translate_model_value("M4T-0830V1")
@@ -73,8 +74,8 @@ class StreamProcessor:
             }
             HistoryService.create_history(info["role"], history_data)
             emit("audio_stream_output", byte_data, broadcast=True, include_self=False)
-            info["is_currently_speaking"] = False
-            info["silent_frames"] = 0
         else:
-            logger.info("silent...")
+            logger.info("wiz judge silent...")
         info["voice_frames"].clear()
+        info["is_currently_speaking"] = False
+        
