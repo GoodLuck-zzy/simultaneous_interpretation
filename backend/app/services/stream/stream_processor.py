@@ -25,7 +25,7 @@ class StreamProcessor:
         if VadService.is_speech_with_wiz_vad(
             audio_format="pcm", sample_rate=sample_rate, data=audio_data_bytes
         ):
-            logger.info("is speech, process")
+            logger.info("Is speech, process")
             if not info["origin_silent"]:
                 emit("origin_audio_stream_output", audio_data_bytes, broadcast=True, include_self=False)
             # torch_data, rate = bytes_to_torch(audio_data_bytes)
@@ -46,7 +46,6 @@ class StreamProcessor:
                     wf.setframerate(sample_rate)
                     wf.writeframes(audio_data_bytes)
                 complete_wav_data = mem_file.getvalue()
-            logger.info(f"complete_wav_data len is {len(complete_wav_data)}")
             mem_block = MemoryBlock(complete_wav_data)
             decoded_audio = voice_predictor.translator.decode_audio(mem_block)
             trans_model = TranslationModel.get_translate_model_value("M4T-0830V1")
@@ -56,7 +55,7 @@ class StreamProcessor:
                 info["target_language"],
                 trans_model,
             )
-            logger.info(f"output text: {text} ")
+            logger.info(f"Translation output text: {text} ")
             tts = TTSProcessor(info["target_language"])
             tts_model_value = TTSModel.get_tts_model_value("TTS_WIZ")
             byte_data, _ = tts.text_to_speech(
@@ -74,8 +73,6 @@ class StreamProcessor:
             }
             HistoryService.create_history(info["role"], history_data)
             emit("audio_stream_output", byte_data, broadcast=True, include_self=False)
-        else:
-            logger.info("wiz judge silent...")
         info["voice_frames"].clear()
         info["is_currently_speaking"] = False
         
