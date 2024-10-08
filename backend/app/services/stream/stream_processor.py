@@ -4,6 +4,7 @@ import pyaudio
 import logging
 from flask_socketio import emit
 from fairseq2.memory import MemoryBlock
+from concurrent.futures import ThreadPoolExecutor
 from app.services.m4t.m4t_model import voice_predictor
 from app.services.translate.s2tt_service import S2TTService
 from app.services.translate.model import TranslationModel
@@ -20,6 +21,20 @@ logger = logging.getLogger(__name__)
 
 class StreamProcessor:
     @classmethod
+    def process_audio_async(cls, info, byte_data, text):
+        torch_data, rate = bytes_to_torch(byte_data)
+        audio_output = AudioService.create_audio_by_torch_data(
+            torch_data, rate, AudioFormat.WAV.value
+        )
+        audio_id = audio_output.id
+        history_data = {
+            "type": TranslationType.SPEECH.value,
+            "text": text,
+            "audio_id": audio_id,
+        }
+        HistoryService.create_history(info["role"], history_data)
+
+    @classmethod
     def process_accumulated_voice_frames(cls, channels, sample_rate, sample_size, info):
         audio_data_bytes = b"".join(info["voice_frames"])
         if VadService.is_speech_with_wiz_vad(
@@ -27,7 +42,12 @@ class StreamProcessor:
         ):
             logger.info("Is speech, process")
             if not info["origin_silent"]:
-                emit("origin_audio_stream_output", audio_data_bytes, broadcast=True, include_self=False)
+                emit(
+                    "origin_audio_stream_output",
+                    audio_data_bytes,
+                    broadcast=True,
+                    include_self=False,
+                )
             # torch_data, rate = bytes_to_torch(audio_data_bytes)
             # audio_input = AudioService.create_audio_by_torch_data(
             #     torch_data, rate, AudioFormat.WAV.value
@@ -61,18 +81,8 @@ class StreamProcessor:
             byte_data, _ = tts.text_to_speech(
                 text, tts_model_value, output=OutputFormat.BYTE.value
             )
-            torch_data, rate = bytes_to_torch(byte_data)
-            audio_output = AudioService.create_audio_by_torch_data(
-                torch_data, rate, AudioFormat.WAV.value
-            )
-            audio_id = audio_output.id
-            history_data = {
-                "type": TranslationType.SPEECH.value,
-                "text": text,
-                "audio_id": audio_id,
-            }
-            HistoryService.create_history(info["role"], history_data)
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                executor.submit(cls.process_audio_async, info, byte_data, text)
             emit("audio_stream_output", byte_data, broadcast=True, include_self=False)
         info["voice_frames"].clear()
         info["is_currently_speaking"] = False
-        
