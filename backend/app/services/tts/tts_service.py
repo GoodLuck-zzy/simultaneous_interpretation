@@ -15,7 +15,7 @@ class TTSProcessor:
     }
 
     def __init__(
-        self, voice, volume=45, speech_rate=55, format="wav", sample_rate=16000
+        self, voice, volume=45, speech_rate=55, format="wav", sample_rate=8000
     ) -> None:
         self.voice = self.language_map[voice]
         self.volume = volume
