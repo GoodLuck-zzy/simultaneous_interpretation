@@ -7,7 +7,7 @@ class M4TModel:
         self,
         model_name="seamlessM4T_large",
         vocoder_name="vocoder_36langs",
-        checkpoint_path="/root/zzy/app/models/MenuSifu_ID_S2S_v1_9.pt",
+        checkpoint_path="/root/zzy/app/models/bidirection_s2st_6_13125.pt",
     ) -> None:
         self.translator = Translator(
             model_name,
