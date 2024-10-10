@@ -22,7 +22,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 MAX_USERS = 2
 client_queue = {}
-vad = webrtcvad.Vad(1)
+vad = webrtcvad.Vad(3)
 frame_duration = 20  # 可以是10, 20, 或30毫秒
 bytes_per_sample = 2
 SAMPLE_RATE = 8000
@@ -30,8 +30,8 @@ samples_per_frame = int(SAMPLE_RATE * frame_duration / 1000)
 CHUNK = samples_per_frame * bytes_per_sample  # 每次处理的块大小
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-SPEAK_MAX_TIME = 5
-SILENT_MAX_FRAME = 30
+SPEAK_MAX_TIME = 3
+SILENT_MAX_FRAME = 20
 
 
 @socketio.on("connect")
