@@ -2,10 +2,9 @@ import io
 import wave
 import pyaudio
 import logging
+import tempfile
 from flask_socketio import emit
-from fairseq2.memory import MemoryBlock
 from concurrent.futures import ThreadPoolExecutor
-from app.services.m4t.m4t_model import voice_predictor
 from app.services.translate.s2tt_service import S2TTService
 from app.services.translate.model import TranslationModel
 from app.services.tts.tts_service import TTSProcessor
@@ -66,11 +65,12 @@ class StreamProcessor:
                     wf.setframerate(sample_rate)
                     wf.writeframes(audio_data_bytes)
                 complete_wav_data = mem_file.getvalue()
-            mem_block = MemoryBlock(complete_wav_data)
-            decoded_audio = voice_predictor.translator.decode_audio(mem_block)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+                temp_file.write(complete_wav_data)
+                temp_file_path = temp_file.name
             trans_model = TranslationModel.get_translate_model_value("M4T-0830V1")
             text = S2TTService.speech_to_translated_text(
-                decoded_audio["waveform"],
+                temp_file_path,
                 info["source_language"],
                 info["target_language"],
                 trans_model,
