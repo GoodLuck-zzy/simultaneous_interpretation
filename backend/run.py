@@ -22,7 +22,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 MAX_USERS = 2
 client_queue = {}
-vad = webrtcvad.Vad(3)
+vad = webrtcvad.Vad(2)
 frame_duration = 20  # 可以是10, 20, 或30毫秒
 bytes_per_sample = 2
 SAMPLE_RATE = 8000
@@ -103,10 +103,12 @@ def handle_audio_stream(data):
                     CHANNELS, SAMPLE_RATE, FORMAT, info
                 )
         else:
-            if is_currently_speaking and info["voice_frames"]:
+            if is_currently_speaking:
+                info["voice_frames"].append(data_block)
                 info["silent_frames"] += 1
                 if info["silent_frames"] >= SILENT_MAX_FRAME:
                     logger.info(f"More than {SILENT_MAX_FRAME} silent frames, process.")
+
                     StreamProcessor.process_accumulated_voice_frames(
                         CHANNELS, SAMPLE_RATE, FORMAT, info
                     )
