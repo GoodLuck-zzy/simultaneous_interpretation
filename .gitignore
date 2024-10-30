@@ -2,5 +2,6 @@ __pycache__
 backend/__pycache__
 *.pyc
 data/
-log/
+logs/
+build/
 .vscode

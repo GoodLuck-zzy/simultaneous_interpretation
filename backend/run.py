@@ -1,3 +1,4 @@
+import sys
 import time
 import pyaudio
 import webrtcvad
@@ -12,6 +13,12 @@ from app.services.stream.stream_processor import StreamProcessor
 from app.utils.util import ensure_dir
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 ensure_dir("logs")
 ensure_dir("data")
@@ -112,7 +119,6 @@ def handle_audio_stream(data):
                     StreamProcessor.process_accumulated_voice_frames(
                         CHANNELS, SAMPLE_RATE, FORMAT, info
                     )
-
 
 if __name__ == "__main__":
     socketio.run(app, debug=True, port=15000, host="0.0.0.0")

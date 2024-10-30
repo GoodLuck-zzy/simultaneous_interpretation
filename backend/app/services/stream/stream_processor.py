@@ -20,6 +20,13 @@ logger = logging.getLogger(__name__)
 
 class StreamProcessor:
     @classmethod
+    def save_wave(data, filename, channels=1, sampwidth=2, framerate=44100):
+        with wave.open(filename, 'wb') as wave_file:
+            wave_file.setnchannels(channels)
+            wave_file.setsampwidth(sampwidth)
+            wave_file.setframerate(framerate)
+            wave_file.writeframes(data)
+    @classmethod
     def process_audio_async(cls, info, byte_data, text):
         torch_data, rate = bytes_to_torch(byte_data)
         audio_output = AudioService.create_audio_by_torch_data(
