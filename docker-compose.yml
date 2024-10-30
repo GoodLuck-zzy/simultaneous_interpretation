@@ -1,0 +1,13 @@
+services:
+  si_app_zzy:
+    image: si_app_1:latest 
+    container_name: si_app_1
+    restart: always
+    privileged: true
+    logging:
+      options:
+        max-size: "110m"
+    volumes:
+      - /root/zzy/simultaneous_interpretation/backend/:/app/backend
+    working_dir: /app/backend
+    entrypoint: /app/backend/boot-entrypoint.sh
