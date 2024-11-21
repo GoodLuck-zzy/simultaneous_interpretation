@@ -7,7 +7,7 @@ class M4TModel:
         self,
         model_name="seamlessM4T_large",
         vocoder_name="vocoder_36langs",
-        checkpoint_path="./llm_models/bidirection_s2st_6_13125.pt",
+        checkpoint_path="./llm_models/bidirection_95_135360.pt",
     ) -> None:
         self.translator = Translator(
             model_name,
@@ -51,7 +51,7 @@ class M4TModel:
             saved_model,
             "module.model.text_encoder_frontend.",
         )
-        self._select_keys(model.t2u_model, saved_model, "module.model.t2u_model.")
+        # self._select_keys(model.t2u_model, saved_model, "module.model.t2u_model.")
 
 
 voice_predictor = M4TModel()
